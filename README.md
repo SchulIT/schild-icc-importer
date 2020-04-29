@@ -26,7 +26,9 @@ Im Verzeichnis `C:\ProgramData\SchulIT\SchildIccImporter` die Datei `settings.js
     "url": "",
     "token": ""
   },
-  "teacher_tag_mappings": {  }
+  "teacher_tag_mappings": {
+    "W": "referendare"
+  }
 }
 ```
 
