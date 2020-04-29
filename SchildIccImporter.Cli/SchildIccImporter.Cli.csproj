@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>SchulIT.SchildIccImporter.Cli</RootNamespace>
+    <Authors>Marcel Marnitz</Authors>
+    <Company>SchulIT</Company>
+    <Product>SchILD zu ICC Importer</Product>
+    <Description>Importiert Daten aus SchILD ins ICC.</Description>
+    <Copyright />
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="5.1.2" />
+    <PackageReference Include="CommandLineParser" Version="2.7.82" />
+    <PackageReference Include="NLog" Version="4.6.8" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SchildIccImporter.Core\SchildIccImporter.Core.csproj" />
+    <ProjectReference Include="..\SchildIccImporter.Settings\SchildIccImporter.Settings.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="nlog.config">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>nlog.Designer.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

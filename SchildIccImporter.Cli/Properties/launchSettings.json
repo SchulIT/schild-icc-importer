@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SchildIccImporter.Cli": {
+      "commandName": "Project",
+      "commandLineArgs": "--students --privacy --studygroups --memberships"
+    }
+  }
+}
