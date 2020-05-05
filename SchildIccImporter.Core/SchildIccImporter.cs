@@ -46,7 +46,7 @@ namespace SchulIT.SchildIccImporter.Core
                 {
                     return new GradeData
                     {
-                        Id = schildGrade.Name,
+                        Id = schildGrade.Id.ToString(),
                         Name = schildGrade.Name
                     };
                 }).ToList();
@@ -73,8 +73,8 @@ namespace SchulIT.SchildIccImporter.Core
                 {
                     data.Add(new GradeTeacherData
                     {
-                        Grade = grade.Name,
-                        Teacher = grade.Teacher.Acronym,
+                        Grade = grade.Id.ToString(),
+                        Teacher = grade.Teacher.Id.ToString(),
                         Type = "primary"
                     });
                 }
@@ -83,8 +83,8 @@ namespace SchulIT.SchildIccImporter.Core
                 {
                     data.Add(new GradeTeacherData
                     {
-                        Grade = grade.Name,
-                        Teacher = grade.Teacher.ToString(),
+                        Grade = grade.Id.ToString(),
+                        Teacher = grade.SubstituteTeacher.Id.ToString(),
                         Type = "substitute"
                     });
                 }
@@ -316,7 +316,7 @@ namespace SchulIT.SchildIccImporter.Core
 
                     return new TeacherData
                     {
-                        Id = teacher.Acronym,
+                        Id = teacher.Id.ToString(),
                         Acronym = teacher.Acronym,
                         Firstname = teacher.Firstname,
                         Lastname = teacher.Lastname,
