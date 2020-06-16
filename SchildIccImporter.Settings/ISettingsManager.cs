@@ -5,5 +5,7 @@ namespace SchulIT.SchildIccImporter.Settings
     public interface ISettingsManager
     {
         Task<ISettings> LoadSettingsAsync();
+
+        Task SaveSettingsAsync(ISettings settings);
     }
 }

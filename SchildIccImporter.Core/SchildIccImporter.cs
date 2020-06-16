@@ -18,9 +18,9 @@ namespace SchulIT.SchildIccImporter.Core
 
         public IDictionary<string, string> TeacherTagMapping { get; } = new Dictionary<string, string>();
 
-        private IExporter schildExporter;
-        private IIccImporter iccImporter;
-        private ILogger<SchildIccImporter> logger;
+        private readonly IExporter schildExporter;
+        private readonly IIccImporter iccImporter;
+        private readonly ILogger<SchildIccImporter> logger;
 
         public SchildIccImporter(IExporter schildExporter, IIccImporter iccImporter, ILogger<SchildIccImporter> logger)
         {
@@ -31,13 +31,13 @@ namespace SchulIT.SchildIccImporter.Core
 
         public async Task<IResponse> ImportGradesAsync()
         {
-            logger.LogDebug("Retrieve grades from SchILD...");
+            logger.LogDebug("Hole Klassen aus Schild...");
             var grades = await schildExporter.GetGradesAsync().ConfigureAwait(false);
-            logger.LogDebug($"Got {grades.Count} grades");
+            logger.LogDebug($"{grades.Count} Klasse(n) geladen.");
 
             if (OnlyVisibleEntities)
             {
-                logger.LogDebug("Remove invisible grades");
+                logger.LogDebug("Ausgeblendete Klassen entfernen.");
                 grades = grades.WhereIsVisible().ToList();
             }
 
@@ -56,14 +56,14 @@ namespace SchulIT.SchildIccImporter.Core
 
         public async Task<IResponse> ImportGradeTeachersAsync()
         {
-            logger.LogDebug("Retrieve grades from SchILD...");
+            logger.LogDebug("Hole Klassen aus Schild...");
             var grades = await schildExporter.GetGradesAsync().ConfigureAwait(false);
             var data = new List<GradeTeacherData>();
-            logger.LogDebug($"Got {grades.Count} grades");
+            logger.LogDebug($"{grades.Count} Klasse(n) geladen.");
 
             if (OnlyVisibleEntities)
             {
-                logger.LogDebug("Remove invisible grades");
+                logger.LogDebug("Ausgeblendete Klassen entfernen.");
                 grades = grades.WhereIsVisible().ToList();
             }
 
@@ -95,13 +95,13 @@ namespace SchulIT.SchildIccImporter.Core
 
         public async Task<IResponse> ImportPrivacyCategoriesAsync()
         {
-            logger.LogDebug("Retrieve privacy categories from SchILD...");
+            logger.LogDebug("Hole Datenschutzkategorien aus SchILD...");
             var categories = await schildExporter.GetPrivacyCategoriesAsync().ConfigureAwait(false);
-            logger.LogDebug($"Got {categories.Count} categories");
+            logger.LogDebug($"{categories.Count} Kategorien geladen.");
 
             if (OnlyVisibleEntities)
             {
-                logger.LogDebug("Remove invisible categories");
+                logger.LogDebug("Ausgeblendete Kategorien entfernen.");
                 categories = categories.WhereIsVisible().ToList();
             }
 
@@ -128,17 +128,17 @@ namespace SchulIT.SchildIccImporter.Core
 
         public async Task<IResponse> ImportStudentsAsync(int[] status, DateTime? leaveDateThreshold)
         {
-            logger.LogDebug("Retrieve students from SchILD...");
+            logger.LogDebug("Hole Lernende aus SchILD...");
             var students = await schildExporter.GetStudentsAsync(status, leaveDateThreshold).ConfigureAwait(false);
-            logger.LogDebug($"Got {students.Count} students");
+            logger.LogDebug($"{students.Count} Lernende(n) geladen.");
 
-            logger.LogDebug("Retrieve students privacies from SchILD...");
+            logger.LogDebug("Hole Datenschutzeinstellungen der Lernenden aus SchILD...");
             var privacies = await schildExporter.GetStudentPrivaciesAsync(students);
-            logger.LogDebug($"Got privacies for {privacies.Count} students");
+            logger.LogDebug($"Datenschutzeinstellungen von {privacies.Count} Lernende(n) erhalten.");
 
             if(OnlyVisibleEntities)
             {
-                logger.LogDebug("Remove invisible privacy categories...");
+                logger.LogDebug("Ausgeblendete Datenschutzkategorien aus den Datenschutzeinstellungen entfernen.");
                 privacies.RemoveInvisiblePrivacyCategories();
             }
 
@@ -219,6 +219,11 @@ namespace SchulIT.SchildIccImporter.Core
             var studyGroups = await schildExporter.GetStudyGroupsAsync(currentStudents, year, section).ConfigureAwait(false);
             var membershipData = new List<StudyGroupMembershipData>();
 
+            if (OnlyVisibleEntities)
+            {
+                studyGroups = studyGroups.RemoveInvisibleGrades().Where(x => x.Grades.Count > 0).ToList();
+            }
+
             foreach (var studyGroup in studyGroups)
             {
                 foreach (var membership in studyGroup.Memberships)
@@ -242,13 +247,12 @@ namespace SchulIT.SchildIccImporter.Core
         /// <returns></returns>
         private string GetStudyGroupName(StudyGroup studyGroup)
         {
-            if(studyGroup.Type == StudyGroupType.Course)
+            if (studyGroup.Type == StudyGroupType.Course)
             {
                 return studyGroup.Name;
             }
 
-            var grades = studyGroup.Grades.Select(x => x.Name).Distinct();
-            return string.Join("-", studyGroup.Grades.Select(x => x.Name).Distinct().OrderBy(x => x));
+            return GetStudyGroupId(studyGroup);
         }
 
         /// <summary>
@@ -258,23 +262,26 @@ namespace SchulIT.SchildIccImporter.Core
         /// <returns></returns>
         private string GetStudyGroupId(StudyGroup studyGroup)
         {
-            if(studyGroup.Type == StudyGroupType.Course)
+            var grades = studyGroup.Grades.Select(x => x.Name).Distinct().OrderBy(x => x);
+            var gradesString = string.Join("-", grades);
+
+            if (studyGroup.Type == StudyGroupType.Course)
             {
-                return studyGroup.Id.ToString();
+                return $"{gradesString}-{studyGroup.Name}";
             }
 
-            return GetStudyGroupName(studyGroup);
+            return gradesString;
         }
 
         public async Task<IResponse> ImportSubjectsAsync()
         {
-            logger.LogDebug("Retrieve subjects from SchILD...");
+            logger.LogDebug("Hole Fächer aus SchILD...");
             var subjects = await schildExporter.GetSubjectsAsync();
-            logger.LogDebug($"Got {subjects.Count} subjects");
+            logger.LogDebug($"{subjects.Count} Fach/Fächer geladen.");
 
             if(OnlyVisibleEntities)
             {
-                logger.LogDebug("Remove invisible subjects");
+                logger.LogDebug("Ausgeblendete Fächer entfernen");
                 subjects = subjects.WhereIsVisible().ToList();
             }
 
@@ -294,13 +301,13 @@ namespace SchulIT.SchildIccImporter.Core
 
         public async Task<IResponse> ImportTeachersAsync(short year, short section)
         {
-            logger.LogDebug("Retrieve teachers from SchILD...");
+            logger.LogDebug("Hole Lehrkräfte aus SchILD...");
             var teachers = await schildExporter.GetTeachersAsync();
-            logger.LogDebug($"Got {teachers.Count} teachers");
+            logger.LogDebug($"{teachers.Count} Lehrkräfte geladen.");
 
             if (OnlyVisibleEntities)
             {
-                logger.LogDebug("Remove teachers grades");
+                logger.LogDebug("Ausgeblendete Lehrkräfte entfernen");
                 teachers = teachers.WhereIsVisible().ToList();
             }
 
@@ -311,7 +318,7 @@ namespace SchulIT.SchildIccImporter.Core
 
                     if(subjects == null)
                     {
-                        throw new Exception("Subjects must not be null");
+                        throw new Exception("Fehler: subjects darf nicht null sein.");
                     }
 
                     return new TeacherData
@@ -348,31 +355,38 @@ namespace SchulIT.SchildIccImporter.Core
 
         public async Task<IResponse> ImportTuitionsAsync(IEnumerable<Student> currentStudents, short year, short section)
         {
-            logger.LogDebug("Retrieve tuitions from SchILD...");
+            logger.LogDebug("Hole Unterrichte aus SchILD...");
             var tuitions = await schildExporter.GetTuitionsAsync(currentStudents, year, section);
-            logger.LogDebug($"Got {tuitions.Count} tuitions");
+            logger.LogDebug($"{tuitions.Count} Unterricht(e) geladen.");
 
             if (OnlyVisibleEntities)
             {
-                logger.LogDebug("Remove invisible teachers");
+                logger.LogDebug("Ausgeblendete Lehrkräfte entfernen.");
                 tuitions = tuitions.RemoveInvisibleTeachers().ToList();
             }
 
             var studyGroups = await schildExporter.GetStudyGroupsAsync(currentStudents, year, section);
+
+            if (OnlyVisibleEntities)
+            {
+                studyGroups = studyGroups.RemoveInvisibleGrades().Where(x => x.Grades.Count > 0).ToList();
+            }
 
             var data = tuitions
                 .RemoveInvisibleTeachers()
                 .Where(x => x.StudyGroupRef != null)
                 .Select(tuition =>
                 {
+                    var studyGroup = studyGroups.FirstOrDefault(x => x.Id == tuition.StudyGroupRef.Id && x.Name == tuition.StudyGroupRef.Name);
+
                     return new TuitionData
                     {
-                        Id = GetTuitionId(tuition),
+                        Id = GetTuitionId(tuition, studyGroup),
                         Name = GetTuitionName(tuition),
                         Subject = tuition.SubjectRef.Id.ToString(),
                         Teacher = tuition.TeacherRef?.Id.ToString(),
                         AdditionalTeachers = tuition.AdditionalTeachersRef.Select(teacher => teacher.Id.ToString()).ToList(),
-                        StudyGroup = GetStudyGroupId(studyGroups.FirstOrDefault(x => x.Id == tuition.StudyGroupRef.Id && x.Name == tuition.StudyGroupRef.Name))
+                        StudyGroup = GetStudyGroupId(studyGroup)
                     };
                 })
                 .ToList();
@@ -380,11 +394,11 @@ namespace SchulIT.SchildIccImporter.Core
             return await iccImporter.ImportTuitionsAsync(data);
         }
 
-        private string GetTuitionId(Tuition tuition)
+        private string GetTuitionId(Tuition tuition, StudyGroup studyGroup)
         {
-            if (tuition.StudyGroupRef?.Id != null)
+            if (studyGroup?.Id != null)
             {
-                return tuition.StudyGroupRef.Id.ToString();
+                return GetStudyGroupId(studyGroup);
             }
 
             return $"{tuition.SubjectRef.Abbreviation}-{tuition.StudyGroupRef.Name}";

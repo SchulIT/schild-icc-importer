@@ -2,7 +2,7 @@
 
 namespace SchulIT.SchildIccImporter.Settings
 {
-    class JsonIccSettings : IIccSettings
+    public class JsonIccSettings : IIccSettings
     {
         [JsonProperty("url")]
         public string Url { get; set; }

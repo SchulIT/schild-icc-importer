@@ -3,7 +3,7 @@ using System;
 
 namespace SchulIT.SchildIccImporter.Settings
 {
-    class JsonSchildSettings : ISchildSettings
+    public class JsonSchildSettings : ISchildSettings
     {
         [JsonProperty("only_visible")]
         public bool OnlyVisibleEntities { get; set; } = true;

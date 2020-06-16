@@ -12,14 +12,14 @@ namespace SchulIT.SchildIccImporter.Settings
         public const string ApplicationName = "SchildIccImporter";
         public const string ApplicationVendor = "SchulIT";
 
-        private ILogger<JsonSettingsManager> logger;
+        private readonly ILogger<JsonSettingsManager> logger;
 
         public JsonSettingsManager(ILogger<JsonSettingsManager> logger)
         {
             this.logger = logger;
         }
 
-        protected string GetSettingsDirectory()
+        protected static string GetSettingsDirectory()
         {
             return Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
@@ -28,7 +28,7 @@ namespace SchulIT.SchildIccImporter.Settings
             );
         }
 
-        protected string GetSettingsJsonPath()
+        protected static string GetSettingsJsonPath()
         {
             return Path.Combine(
                 GetSettingsDirectory(),
@@ -43,7 +43,7 @@ namespace SchulIT.SchildIccImporter.Settings
 
             if (!Directory.Exists(directory))
             {
-                logger.LogInformation("Settings directory does not exist, creating...");
+                logger.LogInformation("Einstellungsverzeichnis existiert nicht, lege es an.");
 
                 try
                 {
@@ -51,7 +51,7 @@ namespace SchulIT.SchildIccImporter.Settings
                 }
                 catch (Exception e)
                 {
-                    logger.LogError(e, "Failed to create settings directory.");
+                    logger.LogError(e, "Fehler beim Erstellen des Einstellungsverzeichnisses. Bitte Schreibrechte überprüfen.");
                     throw e;
                 }
             }
@@ -67,25 +67,26 @@ namespace SchulIT.SchildIccImporter.Settings
                 }
             }
 
-            await SaveSettingsAsync(settings);
+            //await SaveSettingsAsync(settings);
 
             return settings;
         }
 
-        public async Task SaveSettingsAsync(JsonSettings jsonSettings)
+        public async Task SaveSettingsAsync(ISettings jsonSettings)
         {
             try
             {
-
                 using (var writer = new StreamWriter(GetSettingsJsonPath()))
                 {
                     var json = JsonConvert.SerializeObject(jsonSettings, Formatting.Indented);
                     await writer.WriteAsync(json);
                 }
+
+                logger.LogInformation("Einstellungen erfolgreich gespeichert.");
             }
             catch (Exception e)
             {
-                logger.LogError(e, "Cannot save settings.json. Proceed anyways.");
+                logger.LogError(e, "Einstellungen konnten nicht gespeichert werden. Fahre dennoch fort.");
             }
         }
     }
