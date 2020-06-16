@@ -8,11 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\IccImport\IccImport\IccImport.csproj" />
-    <ProjectReference Include="..\..\SchildExport\SchildExport\SchildExport.csproj" />
+    <PackageReference Include="SchulIT.IccImport" Version="1.0.0-preview6" />
+    <PackageReference Include="SchulIT.SchildExport" Version="1.0.0-preview6-1" />
   </ItemGroup>
 
 </Project>

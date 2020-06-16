@@ -25,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SchildExport\SchildExport\SchildExport.csproj" />
     <ProjectReference Include="..\SchildIccImporter.Core\SchildIccImporter.Core.csproj" />
     <ProjectReference Include="..\SchildIccImporter.Settings\SchildIccImporter.Settings.csproj" />
     <ProjectReference Include="..\TaskDialog\TaskDialog\TaskDialog.csproj" />
