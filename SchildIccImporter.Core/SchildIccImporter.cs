@@ -46,7 +46,7 @@ namespace SchulIT.SchildIccImporter.Core
                 {
                     return new GradeData
                     {
-                        Id = schildGrade.Id.ToString(),
+                        Id = schildGrade.Name,
                         Name = schildGrade.Name
                     };
                 }).ToList();
@@ -73,8 +73,8 @@ namespace SchulIT.SchildIccImporter.Core
                 {
                     data.Add(new GradeTeacherData
                     {
-                        Grade = grade.Id.ToString(),
-                        Teacher = grade.Teacher.Id.ToString(),
+                        Grade = grade.Name,
+                        Teacher = grade.Teacher.Acronym,
                         Type = "primary"
                     });
                 }
@@ -83,8 +83,8 @@ namespace SchulIT.SchildIccImporter.Core
                 {
                     data.Add(new GradeTeacherData
                     {
-                        Grade = grade.Id.ToString(),
-                        Teacher = grade.SubstituteTeacher.Id.ToString(),
+                        Grade = grade.Name,
+                        Teacher = grade.SubstituteTeacher.Acronym,
                         Type = "substitute"
                     });
                 }
@@ -158,7 +158,7 @@ namespace SchulIT.SchildIccImporter.Core
                         Email = student.Email,
                         Gender = GetGender(student.Gender),
                         IsFullAged = student.IsFullAged,
-                        Grade = student.Grade?.Id.ToString(),
+                        Grade = student.Grade?.Name,
                         ApprovedPrivacyCategories = approvedPrivacyCategories
                     };
                 })
@@ -206,7 +206,7 @@ namespace SchulIT.SchildIccImporter.Core
                         Id = GetStudyGroupId(studyGroup),
                         Name = GetStudyGroupName(studyGroup),
                         Type = studyGroup.Type == StudyGroupType.Course ? "course" : "grade",
-                        Grades = studyGroup.Grades.Select(grade => grade.Id.ToString()).ToList(),
+                        Grades = studyGroup.Grades.Select(grade => grade.Name).ToList(),
                     };
                 })
                 .ToList();
@@ -323,7 +323,7 @@ namespace SchulIT.SchildIccImporter.Core
 
                     return new TeacherData
                     {
-                        Id = teacher.Id.ToString(),
+                        Id = teacher.Acronym,
                         Acronym = teacher.Acronym,
                         Firstname = teacher.Firstname,
                         Lastname = teacher.Lastname,
@@ -384,8 +384,8 @@ namespace SchulIT.SchildIccImporter.Core
                         Id = GetTuitionId(tuition, studyGroup),
                         Name = GetTuitionName(tuition),
                         Subject = tuition.SubjectRef.Id.ToString(),
-                        Teacher = tuition.TeacherRef?.Id.ToString(),
-                        AdditionalTeachers = tuition.AdditionalTeachersRef.Select(teacher => teacher.Id.ToString()).ToList(),
+                        Teacher = tuition.TeacherRef?.Acronym,
+                        AdditionalTeachers = tuition.AdditionalTeachersRef.Select(teacher => teacher.Acronym).ToList(),
                         StudyGroup = GetStudyGroupId(studyGroup)
                     };
                 })
