@@ -9,7 +9,7 @@
             
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Fluent;component/Themes/Generic.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Fluent;component/Themes/Themes/Light.Emerald.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Fluent;component/Themes/Themes/Light.Blue.xaml" />
 
                 <ResourceDictionary Source="Themes/Generic.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="Themes/ListView.xaml"></ResourceDictionary>

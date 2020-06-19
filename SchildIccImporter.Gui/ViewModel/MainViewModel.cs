@@ -168,6 +168,8 @@ namespace SchildIccImporter.Gui.ViewModel
 
         public RelayCommand SelectAllCommand { get; private set; }
 
+        public RelayCommand UnselectAllCommand { get; private set; }
+
         public RelayCommand LoadSchoolInfoCommand { get; private set; }
 
         #endregion
@@ -192,6 +194,7 @@ namespace SchildIccImporter.Gui.ViewModel
         {
             ImportCommand = new RelayCommand(Import, CanImport);
             SelectAllCommand = new RelayCommand(SelectAll);
+            UnselectAllCommand = new RelayCommand(UnselectAll);
             LoadSchoolInfoCommand = new RelayCommand(LoadCurrentSectionAsync);
 
             this.exporter = exporter;
@@ -387,6 +390,19 @@ namespace SchildIccImporter.Gui.ViewModel
             ImportSubjects = true;
             ImportTeachers = true;
             ImportTuitions = true;
+        }
+
+        private void UnselectAll()
+        {
+            ImportGrades = false;
+            ImportGradeTeachers = false;
+            ImportPrivacy = false;
+            ImportStudents = false;
+            ImportStudyGroupMemberships = false;
+            ImportStudyGroups = false;
+            ImportSubjects = false;
+            ImportTeachers = false;
+            ImportTuitions = false;
         }
     }
 }
