@@ -4,6 +4,7 @@ using GalaSoft.MvvmLight.Messaging;
 using Microsoft.Extensions.Logging;
 using SchildIccImporter.Gui.Message;
 using SchulIT.IccImport;
+using SchulIT.IccImport.Response;
 using SchulIT.SchildExport;
 using SchulIT.SchildIccImporter.Core;
 using SchulIT.SchildIccImporter.Settings;
@@ -245,6 +246,23 @@ namespace SchildIccImporter.Gui.ViewModel
             });
         }
 
+        private void HandleResponse(IResponse response)
+        {
+            var importResponse = response as ImportResponse;
+
+            if(importResponse != null && importResponse.IgnoredEntities.Count > 0)
+            {
+                Messenger.Send(new ResponseMessage { Type = ResponseMessageType.Information, ResponseCode = importResponse.ResponseCode, ResponseBody = importResponse.ResponseBody });
+            }
+
+            var errorResponse = response as ErrorResponse;
+
+            if(errorResponse != null)
+            {
+                Messenger.Send(new ResponseMessage { Type = ResponseMessageType.Error, ResponseCode = errorResponse.ResponseCode, ResponseBody = errorResponse.ResponseBody });
+            }
+        }
+
         private async void DoImport()
         {
             try {
@@ -265,63 +283,63 @@ namespace SchildIccImporter.Gui.ViewModel
                 if (ImportGrades)
                 {
                     logger.LogInformation("Importiere Klassen/Jgst.");
-                    await schildIccImporter.ImportGradesAsync();
+                    HandleResponse(await schildIccImporter.ImportGradesAsync());
                     logger.LogInformation("Klassen/Jgst. erfolgreich importiert.");
                 }
 
                 if(ImportSubjects)
                 {
                     logger.LogInformation("Importiere Fächer...");
-                    await schildIccImporter.ImportSubjectsAsync();
+                    HandleResponse(await schildIccImporter.ImportSubjectsAsync());
                     logger.LogInformation("Fächer erfolgreich importiert.");
                 }
 
                 if(ImportTeachers)
                 {
                     logger.LogInformation("Importiere Lehrkräfte...");
-                    await schildIccImporter.ImportTeachersAsync(Year, Section);
+                    HandleResponse(await schildIccImporter.ImportTeachersAsync(Year, Section));
                     logger.LogInformation("Lehrkräfte erfolgreich importiert.");
                 }
 
                 if(ImportGradeTeachers)
                 {
                     logger.LogInformation("Importiere Klassenleitungen...");
-                    await schildIccImporter.ImportGradeTeachersAsync();
+                    HandleResponse(await schildIccImporter.ImportGradeTeachersAsync());
                     logger.LogInformation("Klassenleitungen erfolgreich importiert.");
                 }
 
                 if(ImportPrivacy)
                 {
                     logger.LogInformation("Importiere Datenschutz-Kategorien...");
-                    await schildIccImporter.ImportPrivacyCategoriesAsync();
+                    HandleResponse(await schildIccImporter.ImportPrivacyCategoriesAsync());
                     logger.LogInformation("Datenschutz-Kategorien erfolgreich importiert.");
                 }
 
                 if(ImportStudents)
                 {
                     logger.LogInformation("Importere Lernende...");
-                    await schildIccImporter.ImportStudentsAsync(settings.Schild.StudentFilter, DateTime.Today);
+                    HandleResponse(await schildIccImporter.ImportStudentsAsync(settings.Schild.StudentFilter, DateTime.Today));
                     logger.LogInformation("Lernende erfolgreich importiert.");
                 }
 
                 if (ImportStudyGroups)
                 {
                     logger.LogInformation("Importiere Lerngruppen...");
-                    await schildIccImporter.ImportStudyGroupsAsync(students, Year, Section);
+                    HandleResponse(await schildIccImporter.ImportStudyGroupsAsync(students, Year, Section));
                     logger.LogInformation("Lerngruppen erfolgreich importiert.");
                 }
 
                 if(ImportStudyGroupMemberships)
                 {
                     logger.LogInformation("Importiere Lerngruppen-Mitgliedschaften...");
-                    await schildIccImporter.ImportStudyGroupMembershipsAsync(students, Year, Section);
+                    HandleResponse(await schildIccImporter.ImportStudyGroupMembershipsAsync(students, Year, Section));
                     logger.LogInformation("Lerngruppen-Mitgliedschaften erfolgreich importiert.");
                 }
 
                 if(ImportTuitions)
                 {
                     logger.LogInformation("Importiere Unterrichte...");
-                    await schildIccImporter.ImportTuitionsAsync(students, Year, Section);
+                    HandleResponse(await schildIccImporter.ImportTuitionsAsync(students, Year, Section));
                     logger.LogInformation("Unterrichte erfolgreich importiert.");
                 }
 

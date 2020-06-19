@@ -1,5 +1,6 @@
 ﻿using Fluent;
 using KPreisser.UI;
+using LinqToDB.Tools;
 using NLog;
 using SchildIccImporter.Gui.Logger;
 using SchildIccImporter.Gui.Message;
@@ -8,6 +9,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Interop;
 
 namespace SchildIccImporter.Gui.View
@@ -53,6 +55,7 @@ namespace SchildIccImporter.Gui.View
             messenger.Register<DialogMessage>(this, OnDialogMessage);
             messenger.Register<ErrorDialogMessage>(this, OnErrorDialogMessage);
             messenger.Register<ConfirmMessage>(this, OnConfirmMessage);
+            messenger.Register<ResponseMessage>(this, OnResponseMessage);
         }
 
         private void OnCloseButtonClick(object sender, System.Windows.RoutedEventArgs e)
@@ -75,6 +78,32 @@ namespace SchildIccImporter.Gui.View
             {
                 target.Events.Clear();
             }
+        }
+
+        private void OnResponseMessage(ResponseMessage msg)
+        {
+            var page = new TaskDialogPage();
+
+            if (msg.Type == ResponseMessageType.Information)
+            {
+                page.Title = "Information";
+                page.Text = "Die Antwort impliziert, dass der Server Daten verworfen hat. Bitte prüfen.";
+                page.Instruction = "Information";
+                page.Icon = TaskDialogStandardIcon.Information;
+            }
+            else if (msg.Type == ResponseMessageType.Error)
+            {
+                page.Title = "Fehler";
+                page.Text = "Die Antwort impliziert, dass der Server die Daten nicht importiert hat. Bitte prüfen.";
+                page.Instruction = "Fehler";
+                page.Icon = TaskDialogStandardIcon.Error;
+            }
+
+            page.Expander.Text = msg.ResponseBody;
+            page.Expander.ExpandFooterArea = true;
+
+            var dialog = new TaskDialog(page);
+            dialog.Show(new WindowInteropHelper(this).Handle);
         }
 
         private void OnConfirmMessage(ConfirmMessage msg)
@@ -135,6 +164,12 @@ namespace SchildIccImporter.Gui.View
 
             var dialog = new TaskDialog(page);
             dialog.Show(new WindowInteropHelper(this).Handle);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as System.Windows.Controls.Button;
+            Console.Write("Test");
         }
     }
 }
