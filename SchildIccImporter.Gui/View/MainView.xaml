@@ -393,13 +393,6 @@
                     <GridViewColumn Header="Datum" DisplayMemberBinding="{Binding TimeStamp, StringFormat=g, ConverterCulture=de}" Width="100" />
                     <GridViewColumn Header="Service" DisplayMemberBinding="{Binding LoggerName}" Width="200" />
                     <GridViewColumn Header="Mitteilung" DisplayMemberBinding="{Binding Message}" Width="800" />
-                    <GridViewColumn Header="" Width="100">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Click="Button_Click" DataContext="{Binding Exception}">Fehler anzeigen</Button>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
                 </GridView>
             </ListView.View>
         </ListView>

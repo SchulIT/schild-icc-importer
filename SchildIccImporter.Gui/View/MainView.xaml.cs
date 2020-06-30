@@ -165,11 +165,5 @@ namespace SchildIccImporter.Gui.View
             var dialog = new TaskDialog(page);
             dialog.Show(new WindowInteropHelper(this).Handle);
         }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            var button = sender as System.Windows.Controls.Button;
-            Console.Write("Test");
-        }
     }
 }
