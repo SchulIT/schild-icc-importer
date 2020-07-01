@@ -10,6 +10,7 @@
     <Description>Importiert Daten aus SchILD ins ICC.</Description>
     <Copyright />
     <ApplicationIcon>icon.ico</ApplicationIcon>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

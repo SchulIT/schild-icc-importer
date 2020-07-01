@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>SchulIT.SchildIccImporter.Core</RootNamespace>
     <AssemblyName>SchulIT.SchildIccImporter.Core</AssemblyName>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

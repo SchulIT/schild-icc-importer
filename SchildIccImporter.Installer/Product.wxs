@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?define UpgradeGuid="4E74A3CC-F78E-4035-A1B8-41D0BE87A0FE" ?>
+  <?define Version="1.0.0"?>
+
+  <Product Id="*" Name="SchILD ICC Importer" Language="1033" Version="$(var.Version)" Manufacturer="SchulIT" UpgradeCode="$(var.UpgradeGuid)">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Platform="x64" />
+    <Media Id="1" Cabinet="data.cab" EmbedCab="yes" />
+
+    <!-- Icon for Programs & Features -->
+    <Icon Id="icon.ico" SourceFile="icon.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+
+    <!-- APPLICATION DIRECTORY -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="VENDORFOLDER" Name="SchulIT">
+          <Directory Id="APPLICATIONFOLDER" Name="SchILD ICC Importer">
+            <Directory Id="CONSOLE_INSTALLLOCATION" Name="Console" />
+            <Directory Id="GUI_INSTALLLOCATION" Name="GUI" />
+          </Directory>
+        </Directory>
+      </Directory>
+
+      <!-- STARTMENU -->
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="MyShortCutsDir" Name="SchulIT">
+          <Component Id="ShortCutComponent" Guid="7961A55E-DF13-461B-BB2B-55BB1E4A63AA">
+            <Shortcut Id="ShortCutGUI" Name="SchILD ICC Importer" Target="[GUI_INSTALLLOCATION]\SchildIccImporter.Gui.exe" Icon="icon.ico" />
+            <RemoveFolder Id="RemoveShortCut" On="uninstall"/>
+            <RegistryValue Root="HKCU" Key="Software\SchulIT\SchILDICCImporter" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+          </Component>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Feature Id="MainFeature" Title="SchILD ICC Importer" Level="1">
+      <ComponentGroupRef Id="ConsoleSourceComponentGroup" />
+      <ComponentGroupRef Id="GuiSourceComponentGroup" />
+
+      <Feature Id="ShortcutFeature" Title="Startmenü-Verknüpfung" Level="1">
+        <ComponentRef Id="ShortCutComponent"/>
+      </Feature>
+    </Feature>
+
+    <!-- PREVENT DOWNGRADING -->
+    <MajorUpgrade DowngradeErrorMessage="Downgrading nicht möglich. Bitte zunächst die Software deinstallieren und danach erneut probieren." />
+
+    <UIRef Id="WixUI_Advanced" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Property Id="VendorFolderName" Value="SchulIT" />
+    <Property Id="ApplicationFolderName" Value="SchILD ICC Importer" />
+    <Property Id="WixAppFolder" Value="WixPerMachineFolder" />
+    <WixVariable Id="WixUISupportPerUser" Value="0" />
+    <WixVariable Id="WixUILicenseRtf" Value="Eula.rtf" />
+
+    <SetDirectory Id="APPLICATIONFOLDER" Value="[ProgramFiles64Folder][VendorFolderName]\[ApplicationFolderName]">APPLICATIONFOLDER=""</SetDirectory>
+  </Product>
+</Wix>
