@@ -12,7 +12,13 @@ Installationspakete gibt es [auf GitHub](https://github.com/SchulIT/schild-icc-i
 
 ## Konfiguration
 
-Im Verzeichnis `C:\ProgramData\SchulIT\SchildIccImporter` die Datei `settings.json` anlegen:
+Die Konfiguration kann über die grafische Oberfläche vorgenommen werden.
+
+![](screenshots/configuration.png)
+
+**Hinweis:** Die Konfiguration des Tag-Mappings kann aktuell nicht über die GUI vorgenommen werden.
+
+Die Konfigurationsdatei befindet sich im Verzeichnis `C:\ProgramData\SchulIT\SchildIccImporter` als `settings.json`.
 
 ```json
 {
@@ -46,9 +52,11 @@ Erklärung:
 * `icc.token` legt das API Token fest
 * `teacher_tag_mappings` enthält Mappings zum Hochladen von Lehrertags. Es handelts ich dabei um ein Dictionary. Der Schlüssel repräsentiert das Rechtsverhältnis der Lehrkraft und der Wert den Schlüssel des zugehörigen Lehrertags im ICC
 
-## Programm starten
+## Konsolenprogramm
 
-Aktuell gibt es nur ein Konsolenprogramm. Dieses startet man mit den folgenden möglichen Parametern:
+Das Konsolenprogramm kann genutzt werden, um die Informationen in regelmäßigen Abständen (bspw. mittels Aufgabe) in das ICC zu importieren. Die Konfiguration im oben genannten Verzeichnis wird dazu genutzt.
+
+Das Programm befindet sich im Programmverzeichnis unter `Console` (es gibt keinen Startmenüeintrag).
 
 ```
 SchildIccImporter.Cli 1.0.0
