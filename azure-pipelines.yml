@@ -85,7 +85,7 @@ stages:
       displayName: Release to GitHub
       inputs:
         gitHubConnection: 'GitHub.com'
-        repositoryName: schulit/schildiccimporter
+        repositoryName: schulit/schild-icc-importer
         assets: |
           $(Agent.BuildDirectory)/output/setup-*.msi
       
