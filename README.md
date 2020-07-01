@@ -1,5 +1,9 @@
 # SchILD ICC Importer
 
+[![Build Status](https://dev.azure.com/schulit/SchILD%20ICC%20Importer/_apis/build/status/SchulIT.schild-icc-importer?branchName=master)](https://dev.azure.com/schulit/SchILD%20ICC%20Importer/_build/latest?definitionId=11&branchName=master)
+![GitHub](https://img.shields.io/github/license/schulit/schild-icc-importer?style=flat-square)
+![.NET Core 3.1](https://img.shields.io/badge/.NET%20Core-3.1-brightgreen?style=flat-square)
+
 Dieses Tool importiert die Daten aus SchILD ins das ICC. Dazu nutzt sie die [SchildExport-Bibliothek](https://github.com/schulit/schildexport).
 
 ## Installation
