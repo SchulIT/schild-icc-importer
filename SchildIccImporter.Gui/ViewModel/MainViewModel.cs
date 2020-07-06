@@ -272,6 +272,8 @@ namespace SchildIccImporter.Gui.ViewModel
                 IsImportRunning = true;
                 var settings = await settingsManager.LoadSettingsAsync();
 
+                schildIccImporter.TeacherTagMapping.Clear();
+
                 foreach (var mapping in settings.TeacherTagMapping)
                 {
                     schildIccImporter.TeacherTagMapping.Add(mapping.Key, mapping.Value);
