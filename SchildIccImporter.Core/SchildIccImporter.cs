@@ -345,7 +345,7 @@ namespace SchulIT.SchildIccImporter.Core
 
             var sectionData = teacher.SectionData.FirstOrDefault(x => x.Section == section && x.Year == year);
 
-            if(sectionData != null && TeacherTagMapping.ContainsKey(sectionData.LegalRelationship))
+            if(sectionData != null && !string.IsNullOrEmpty(sectionData.LegalRelationship) && TeacherTagMapping.ContainsKey(sectionData.LegalRelationship))
             {
                 tags.Add(TeacherTagMapping[sectionData.LegalRelationship]);
             }
