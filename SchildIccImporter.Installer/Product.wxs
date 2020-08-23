@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <?define UpgradeGuid="4E74A3CC-F78E-4035-A1B8-41D0BE87A0FE" ?>
-  <?define Version="0.9.0"?>
+  <?define Version="0.9.1"?>
 
   <Product Id="*" Name="SchILD ICC Importer" Language="1033" Version="$(var.Version)" Manufacturer="SchulIT" UpgradeCode="$(var.UpgradeGuid)">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Platform="x64" />
