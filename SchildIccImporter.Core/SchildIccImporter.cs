@@ -199,6 +199,7 @@ namespace SchulIT.SchildIccImporter.Core
             }
 
             var data = studyGroups
+                .Where(x => x != null)
                 .Select(studyGroup =>
                 {
                     return new StudyGroupData
