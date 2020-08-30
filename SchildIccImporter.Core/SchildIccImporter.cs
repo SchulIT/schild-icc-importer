@@ -384,6 +384,7 @@ namespace SchulIT.SchildIccImporter.Core
                     {
                         Id = GetTuitionId(tuition, studyGroup),
                         Name = GetTuitionName(tuition),
+                        DisplayName = studyGroup.DisplayName,
                         Subject = tuition.SubjectRef.Id.ToString(),
                         Teacher = tuition.TeacherRef?.Acronym,
                         AdditionalTeachers = tuition.AdditionalTeachersRef.Select(teacher => teacher.Acronym).ToList(),
