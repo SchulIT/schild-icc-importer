@@ -56,12 +56,24 @@ stages:
         solution: '$(solution)'
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
-        msbuildArgs: '/p:RunWixToolsOutOfProc=true'
+        msbuildArgs: '/p:RunWixToolsOutOfProc=true'   
 
     - task: CmdLine@2
       displayName: Copy and rename MSI
       inputs:
         script: copy SchildIccImporter.Installer\bin\$(buildPlatform)\Release\SchildIccImporter.Installer.msi output\setup-$(Build.SourceBranchName).msi
+      condition: succeeded()
+
+    - task: NuGetCommand@2
+      displayName: 'nuget pack'
+      inputs:
+        command: pack
+        packagesToPack: '**\*.nuspec'
+
+    - task: CmdLine@2
+      displayName: Copy and rename MSI
+      inputs:
+        script: copy SchildIccImporter.Core\*.nupkg output
       condition: succeeded()
 
     - task: PublishPipelineArtifact@1
@@ -79,7 +91,15 @@ stages:
   - job: GitHub
     steps:
     - task: DownloadPipelineArtifact@2
-      displayName: Download MSI artifacts
+      displayName: Download artifacts
+
+    - task: NuGetCommand@2
+      displayName: 'Release to NuGet'
+      inputs:
+        command: push
+        publishFeedCredentials: 'NuGet.org'
+        nuGetFeedType: external
+        packagesToPush: $(Agent.BuildDirectory)/output/*.nupkg
 
     - task: GitHubRelease@0
       displayName: Release to GitHub
@@ -88,4 +108,5 @@ stages:
         repositoryName: schulit/schild-icc-importer
         assets: |
           $(Agent.BuildDirectory)/output/setup-*.msi
+          $(Agent.BuildDirectory)/output/*.nupkg
       
