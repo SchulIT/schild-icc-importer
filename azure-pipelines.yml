@@ -71,9 +71,9 @@ stages:
         packagesToPack: '**\*.nuspec'
 
     - task: CmdLine@2
-      displayName: Copy and rename MSI
+      displayName: Copy NuPKG
       inputs:
-        script: copy SchildIccImporter.Core\*.nupkg output
+        script: copy *.nupkg output
       condition: succeeded()
 
     - task: PublishPipelineArtifact@1
