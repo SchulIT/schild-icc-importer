@@ -204,8 +204,8 @@ namespace SchulIT.SchildIccImporter.Core
                 {
                     return new StudyGroupData
                     {
-                        Id = GetStudyGroupId(studyGroup),
-                        Name = GetStudyGroupName(studyGroup),
+                        Id = IdResolver.Resolve(studyGroup),
+                        Name = NameResolver.Resolve(studyGroup),
                         Type = studyGroup.Type == StudyGroupType.Course ? "course" : "grade",
                         Grades = studyGroup.Grades.Select(grade => grade.Name).ToList(),
                     };
@@ -231,7 +231,7 @@ namespace SchulIT.SchildIccImporter.Core
                 {
                     membershipData.Add(new StudyGroupMembershipData
                     {
-                        StudyGroup = GetStudyGroupId(studyGroup),
+                        StudyGroup = IdResolver.Resolve(studyGroup),
                         Student = membership.Student.Id.ToString(),
                         Type = membership.Type
                     });
@@ -239,39 +239,6 @@ namespace SchulIT.SchildIccImporter.Core
             }
 
             return await iccImporter.ImportStudyGroupMembershipsAsync(membershipData);
-        }
-
-        /// <summary>
-        /// TODO: Make this configurable
-        /// </summary>
-        /// <param name="studyGroup"></param>
-        /// <returns></returns>
-        private string GetStudyGroupName(StudyGroup studyGroup)
-        {
-            if (studyGroup.Type == StudyGroupType.Course)
-            {
-                return studyGroup.Name;
-            }
-
-            return GetStudyGroupId(studyGroup);
-        }
-
-        /// <summary>
-        /// TODO: Make this configurable
-        /// </summary>
-        /// <param name="studyGroup"></param>
-        /// <returns></returns>
-        private string GetStudyGroupId(StudyGroup studyGroup)
-        {
-            var grades = studyGroup.Grades.Select(x => x.Name).Distinct().OrderBy(x => x);
-            var gradesString = string.Join("-", grades);
-
-            if (studyGroup.Type == StudyGroupType.Course)
-            {
-                return $"{gradesString}-{studyGroup.Name}";
-            }
-
-            return gradesString;
         }
 
         public async Task<IResponse> ImportSubjectsAsync()
@@ -382,38 +349,18 @@ namespace SchulIT.SchildIccImporter.Core
 
                     return new TuitionData
                     {
-                        Id = GetTuitionId(tuition, studyGroup),
-                        Name = GetTuitionName(tuition),
+                        Id = IdResolver.Resolve(tuition, studyGroup),
+                        Name = NameResolver.Resolve(tuition),
                         DisplayName = studyGroup.DisplayName,
                         Subject = tuition.SubjectRef.Id.ToString(),
                         Teacher = tuition.TeacherRef?.Acronym,
                         AdditionalTeachers = tuition.AdditionalTeachersRef.Select(teacher => teacher.Acronym).ToList(),
-                        StudyGroup = GetStudyGroupId(studyGroup)
+                        StudyGroup = IdResolver.Resolve(studyGroup)
                     };
                 })
                 .ToList();
 
             return await iccImporter.ImportTuitionsAsync(data);
-        }
-
-        private string GetTuitionId(Tuition tuition, StudyGroup studyGroup)
-        {
-            if (studyGroup?.Id != null)
-            {
-                return GetStudyGroupId(studyGroup);
-            }
-
-            return $"{tuition.SubjectRef.Abbreviation}-{tuition.StudyGroupRef.Name}";
-        }
-
-        private string GetTuitionName(Tuition tuition)
-        {
-            if(tuition.StudyGroupRef.Id == null) // Klassenunterricht
-            {
-                return $"{tuition.SubjectRef.Abbreviation}-{tuition.StudyGroupRef.Name}";
-            }
-
-            return tuition.StudyGroupRef.Name;
         }
     }
 }
