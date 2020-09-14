@@ -73,7 +73,7 @@ stages:
     - task: CmdLine@2
       displayName: Copy NuPKG
       inputs:
-        script: copy '$(Build.ArtifactStagingDirectory)\*.nupkg' output
+        script: copy "$(Build.ArtifactStagingDirectory)\*.nupkg" output
       condition: succeeded()
 
     - task: PublishPipelineArtifact@1
