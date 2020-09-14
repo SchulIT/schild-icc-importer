@@ -71,9 +71,15 @@ stages:
         packagesToPack: '**\*.nuspec'
 
     - task: CmdLine@2
+      displayName: Show directory
+      inputs:
+        script: dir
+      condition: succeeded()
+
+    - task: CmdLine@2
       displayName: Copy NuPKG
       inputs:
-        script: copy *.nupkg output
+        script: copy '*.nupkg' output
       condition: succeeded()
 
     - task: PublishPipelineArtifact@1
