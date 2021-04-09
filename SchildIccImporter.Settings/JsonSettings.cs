@@ -14,6 +14,7 @@ namespace SchulIT.SchildIccImporter.Settings
         [JsonProperty("teacher_tag_mappings")]
         public Dictionary<string, string> TeacherTagMapping { get; } = new Dictionary<string, string>();
 
-        
+        [JsonProperty("grades_without_substitute_teachers")]
+        public List<string> GradesWithoutSubstituteTeachers { get; } = new List<string>();
     }
 }

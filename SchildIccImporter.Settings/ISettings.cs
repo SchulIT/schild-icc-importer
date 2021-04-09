@@ -9,5 +9,7 @@ namespace SchulIT.SchildIccImporter.Settings
         IIccSettings Icc { get; }
 
         Dictionary<string, string> TeacherTagMapping { get; }
+
+        List<string> GradesWithoutSubstituteTeachers { get; }
     }
 }

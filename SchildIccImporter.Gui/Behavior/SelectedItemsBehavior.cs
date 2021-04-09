@@ -46,7 +46,10 @@ namespace SchildIccImporter.Gui.Behavior
             {
                 foreach (var addedItem in e.NewItems)
                 {
-                    AssociatedObject.SelectedItems.Add(addedItem);
+                    if (!AssociatedObject.SelectedItems.Contains(addedItem))
+                    {
+                        AssociatedObject.SelectedItems.Add(addedItem);
+                    }
                 }
             }
 
@@ -66,7 +69,7 @@ namespace SchildIccImporter.Gui.Behavior
 
                 foreach (var item in collection)
                 {
-                    AssociatedObject.SelectedItems.Add(item);
+                    AssociatedObject.SelectedItems.Remove(item);
                 }
 
                 suppressBoundCollectionChangedEvent = false;
@@ -114,7 +117,10 @@ namespace SchildIccImporter.Gui.Behavior
             // Mofify the underlying collection
             foreach (var addedItem in e.AddedItems)
             {
-                boundList.Add(addedItem);
+                if (!boundList.Contains(addedItem))
+                {
+                    boundList.Add(addedItem);
+                }
             }
 
             foreach (var removedItem in e.RemovedItems)

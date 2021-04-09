@@ -18,6 +18,8 @@ namespace SchulIT.SchildIccImporter.Core
 
         public IDictionary<string, string> TeacherTagMapping { get; } = new Dictionary<string, string>();
 
+        public List<string> GradesWithoutSubstituteTeachers { get; } = new List<string>();
+
         private readonly IExporter schildExporter;
         private readonly IIccImporter iccImporter;
         private readonly ILogger<SchildIccImporter> logger;
@@ -85,7 +87,7 @@ namespace SchulIT.SchildIccImporter.Core
                     {
                         Grade = grade.Name,
                         Teacher = grade.SubstituteTeacher.Acronym,
-                        Type = "substitute"
+                        Type = GradesWithoutSubstituteTeachers.Contains(grade.Name) ? "primary": "substitute"
                     });
                 }
             }
@@ -157,7 +159,7 @@ namespace SchulIT.SchildIccImporter.Core
                         Status = student.Status,
                         Email = student.Email,
                         Gender = GetGender(student.Gender),
-                        IsFullAged = student.IsFullAged,
+                        Birthday = student.Birthday.HasValue ? student.Birthday.Value : new DateTime(1970,1,1),
                         Grade = student.Grade?.Name,
                         ApprovedPrivacyCategories = approvedPrivacyCategories
                     };

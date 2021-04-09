@@ -1,6 +1,9 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using SchulIT.SchildExport;
 using SchulIT.SchildExport.Entities;
+using SchulIT.SchildExport.Linq;
+using SchulIT.SchildExport.Models;
 using SchulIT.SchildIccImporter.Settings;
 using System;
 using System.Collections.Generic;
@@ -49,6 +52,10 @@ namespace SchildIccImporter.Gui.ViewModel
 
         public ObservableCollection<SchuelerStatus> EnabledSchuelerStatusList { get; private set; } = new ObservableCollection<SchuelerStatus>();
 
+        public ObservableCollection<string> Grades { get; private set; } = new ObservableCollection<string>();
+
+        public ObservableCollection<string> GradesWithoutSubstituteTeachers { get; private set; } = new ObservableCollection<string>();
+
         private bool canSaveSettings;
 
         public bool CanSaveSettings
@@ -72,13 +79,16 @@ namespace SchildIccImporter.Gui.ViewModel
         #region Services
 
         private readonly ISettingsManager settingsManager;
+        private readonly IExporter schildExporter;
 
         #endregion
 
 
-        public SettingsViewModel(ISettingsManager settingsManager)
+        public SettingsViewModel(ISettingsManager settingsManager, IExporter exporter)
         {
             this.settingsManager = settingsManager;
+            this.schildExporter = exporter;
+
             LoadSchuelerStatus();
             SaveCommand = new RelayCommand(SaveSettings, CanSaveSettings);
 
@@ -99,6 +109,34 @@ namespace SchildIccImporter.Gui.ViewModel
 
             IccEndpoint = settings.Icc.Url;
             IccToken = settings.Icc.Token;
+
+            if(!string.IsNullOrEmpty(ConnectionString))
+            {
+                Grades.Clear();
+                GradesWithoutSubstituteTeachers.Clear();
+
+                try
+                {
+                    var grades = (await schildExporter.GetGradesAsync()) as IEnumerable<Grade>;
+                    if (OnlyVisible)
+                    {
+                        grades = grades.WhereIsVisible();
+                    }
+
+                    foreach (var grade in grades)
+                    {
+                        Grades.Add(grade.Name);
+                        if (settings.GradesWithoutSubstituteTeachers.Contains(grade.Name))
+                        {
+                            GradesWithoutSubstituteTeachers.Add(grade.Name);
+                        }
+                    }
+                }
+                catch
+                {
+                    // nothing to do here - list boxes were already cleared
+                }
+            }
         }
 
         private async void SaveSettings()
@@ -115,7 +153,10 @@ namespace SchildIccImporter.Gui.ViewModel
                 var schildSettings = settings.Schild as JsonSchildSettings;
                 schildSettings.ConnectionString = ConnectionString;
                 schildSettings.OnlyVisibleEntities = OnlyVisible;
-                schildSettings.StudentFilter = EnabledSchuelerStatusList.Cast<int>().ToArray();
+                schildSettings.StudentFilter = EnabledSchuelerStatusList.Cast<int>().Distinct().ToArray();
+
+                settings.GradesWithoutSubstituteTeachers.Clear();
+                settings.GradesWithoutSubstituteTeachers.AddRange(GradesWithoutSubstituteTeachers.Distinct());
 
                 await settingsManager.SaveSettingsAsync(settings);
             }

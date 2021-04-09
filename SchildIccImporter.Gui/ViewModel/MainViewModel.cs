@@ -280,6 +280,8 @@ namespace SchildIccImporter.Gui.ViewModel
                 }
 
                 schildIccImporter.OnlyVisibleEntities = settings.Schild.OnlyVisibleEntities;
+                schildIccImporter.GradesWithoutSubstituteTeachers.Clear();
+                schildIccImporter.GradesWithoutSubstituteTeachers.AddRange(settings.GradesWithoutSubstituteTeachers);
                 iccImporter.BaseUrl = settings.Icc.Url;
                 iccImporter.Token = settings.Icc.Token;
 

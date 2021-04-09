@@ -59,6 +59,10 @@ namespace SchulIT.SchildIccImporter.Cli
                 schildIccImporter.TeacherTagMapping.Add(mapping.Key, mapping.Value);
             }
 
+            schildIccImporter.OnlyVisibleEntities = settings.Schild.OnlyVisibleEntities;
+            schildIccImporter.GradesWithoutSubstituteTeachers.Clear();
+            schildIccImporter.GradesWithoutSubstituteTeachers.AddRange(settings.GradesWithoutSubstituteTeachers);
+
             logger.LogDebug("Services configured.");
 
             logger.LogDebug("Get current academic term...");

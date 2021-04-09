@@ -12,6 +12,8 @@ namespace SchulIT.SchildIccImporter.Core
 
         IDictionary<string, string> TeacherTagMapping { get; }
 
+        List<string> GradesWithoutSubstituteTeachers { get; }
+
         Task<IResponse> ImportSubjectsAsync();
 
         Task<IResponse> ImportTeachersAsync(short year, short section);
