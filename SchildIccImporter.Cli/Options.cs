@@ -31,5 +31,11 @@ namespace SchulIT.SchildIccImporter.Cli
         [Option("privacy", HelpText = "Privatsphären-Kategorien ins ICC importieren.")]
         public bool PrivacyCategories { get; set; }
 
+        [Option("year", HelpText = "Gibt das Schuljahr an, welches importiert werden soll.")]
+        public short Year { get; set; }
+
+        [Option("section", HelpText = "Gibt den Abschnitt an, welcher importiert werden soll.")]
+        public short Section { get; set; }
+
     }
 }

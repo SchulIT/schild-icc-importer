@@ -64,25 +64,13 @@ namespace SchulIT.SchildIccImporter.Cli
             schildIccImporter.GradesWithoutSubstituteTeachers.AddRange(settings.GradesWithoutSubstituteTeachers);
 
             logger.LogDebug("Services configured.");
-
-            logger.LogDebug("Get current academic term...");
-            var schoolInfo = await exporter.GetSchoolInfoAsync();
-            logger.LogInformation($"Current year: {schoolInfo.CurrentYear}");
-            logger.LogInformation($"Current section: {schoolInfo.CurrentSection}");
-
-            if (schoolInfo.CurrentSection == null || schoolInfo.CurrentYear == null)
-            {
-                logger.LogError("Current year and/or section is null - please fix SchILD ASAP!");
-                Environment.Exit(1);
-            }
-
             logger.LogInformation("Retrieving students...");
             var currentStudents = await exporter.GetStudentsAsync(settings.Schild.StudentFilter, DateTime.Today);
 
             if (options.Grades)
             {
                 logger.LogInformation("Uploading grades...");
-                await schildIccImporter.ImportGradesAsync();
+                await schildIccImporter.ImportGradesAsync(options.Year, options.Section);
             }
 
             if (options.Subjects)
@@ -94,13 +82,13 @@ namespace SchulIT.SchildIccImporter.Cli
             if (options.Teachers)
             {
                 logger.LogInformation("Uploading teachers...");
-                await schildIccImporter.ImportTeachersAsync(schoolInfo.CurrentYear.Value, schoolInfo.CurrentSection.Value);
+                await schildIccImporter.ImportTeachersAsync(options.Year, options.Section);
             }
 
             if (options.TeacherGrades)
             {
                 logger.LogInformation("Uploading teacher grades...");
-                await schildIccImporter.ImportGradeTeachersAsync();
+                await schildIccImporter.ImportGradeTeachersAsync(options.Year, options.Section);
             }
 
             if (options.PrivacyCategories)
@@ -112,25 +100,25 @@ namespace SchulIT.SchildIccImporter.Cli
             if (options.Students)
             {
                 logger.LogInformation("Uploading students...");
-                await schildIccImporter.ImportStudentsAsync(settings.Schild.StudentFilter, DateTime.Today);
+                await schildIccImporter.ImportStudentsAsync(options.Year, options.Section, settings.Schild.StudentFilter, DateTime.Today);
             }
 
             if (options.StudyGroups)
             {
                 logger.LogInformation("Uploading study groups...");
-                await schildIccImporter.ImportStudyGroupsAsync(currentStudents, schoolInfo.CurrentYear.Value, schoolInfo.CurrentSection.Value);
+                await schildIccImporter.ImportStudyGroupsAsync(currentStudents, options.Year, options.Section);
             }
 
             if(options.StudyGroupMemberships)
             {
                 logger.LogInformation("Uploading study group memberships...");
-                await schildIccImporter.ImportStudyGroupMembershipsAsync(currentStudents, schoolInfo.CurrentYear.Value, schoolInfo.CurrentSection.Value);
+                await schildIccImporter.ImportStudyGroupMembershipsAsync(currentStudents, options.Year, options.Section);
             }
 
             if (options.Tuitions)
             {
                 logger.LogInformation("Uploading tuitions...");
-                await schildIccImporter.ImportTuitionsAsync(currentStudents, schoolInfo.CurrentYear.Value, schoolInfo.CurrentSection.Value);
+                await schildIccImporter.ImportTuitionsAsync(currentStudents, options.Year, options.Section);
             }
 
             Console.WriteLine("Upload finished. Press any key to close this window.");
