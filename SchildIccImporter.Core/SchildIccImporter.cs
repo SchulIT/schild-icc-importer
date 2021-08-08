@@ -31,10 +31,10 @@ namespace SchulIT.SchildIccImporter.Core
             this.logger = logger;
         }
 
-        public async Task<IResponse> ImportGradesAsync()
+        public async Task<IResponse> ImportGradesAsync(short year, short section)
         {
             logger.LogDebug("Hole Klassen aus Schild...");
-            var grades = await schildExporter.GetGradesAsync().ConfigureAwait(false);
+            var grades = await schildExporter.GetGradesAsync(year, section).ConfigureAwait(false);
             logger.LogDebug($"{grades.Count} Klasse(n) geladen.");
 
             if (OnlyVisibleEntities)
@@ -56,10 +56,10 @@ namespace SchulIT.SchildIccImporter.Core
             return await iccImporter.ImportGradesAsync(data);
         }
 
-        public async Task<IResponse> ImportGradeTeachersAsync()
+        public async Task<IResponse> ImportGradeTeachersAsync(short year, short section)
         {
             logger.LogDebug("Hole Klassen aus Schild...");
-            var grades = await schildExporter.GetGradesAsync().ConfigureAwait(false);
+            var grades = await schildExporter.GetGradesAsync(year, section).ConfigureAwait(false);
             var data = new List<GradeTeacherData>();
             logger.LogDebug($"{grades.Count} Klasse(n) geladen.");
 
@@ -92,7 +92,25 @@ namespace SchulIT.SchildIccImporter.Core
                 }
             }
 
-            return await iccImporter.ImportGradeTeachersAsync(data);
+            return await iccImporter.ImportGradeTeachersAsync(data, section, year);
+        }
+
+        public async Task<IResponse> ImportGradeMembershipsAsync(short year, short section, int[] status)
+        {
+            logger.LogDebug("Hole Lernende aus SchILD...");
+            var students = await schildExporter.GetStudentsAsync(year, section).ConfigureAwait(false);
+            logger.LogDebug($"{students.Count} Lernende(n) geladen.");
+
+            var memberships = students.Select(student =>
+            {
+                return new GradeMembershipData
+                {
+                    Student = student.Id.ToString(),
+                    Grade = student.Grade.Name
+                };
+            }).ToList();
+
+            return await iccImporter.ImportGradeMembershipsAsync(memberships, section, year);
         }
 
         public async Task<IResponse> ImportPrivacyCategoriesAsync()
@@ -122,16 +140,16 @@ namespace SchulIT.SchildIccImporter.Core
             return await iccImporter.ImportPrivacyCategoriesAsync(data);
         }
 
-        public Task<IResponse> ImportStudentsAsync() => ImportStudentsAsync(Array.Empty<int>());
+        public Task<IResponse> ImportStudentsAsync(short year, short section) => ImportStudentsAsync(year, section, Array.Empty<int>());
 
-        public Task<IResponse> ImportStudentsAsync(int[] status) => ImportStudentsAsync(status, null);
+        public Task<IResponse> ImportStudentsAsync(short year, short section, int[] status) => ImportStudentsAsync(year, section, status, null);
 
-        public Task<IResponse> ImportStudentsAsync(DateTime leaveDateThreshold) => ImportStudentsAsync(Array.Empty<int>(), leaveDateThreshold);
+        public Task<IResponse> ImportStudentsAsync(short year, short section, DateTime leaveDateThreshold) => ImportStudentsAsync(year, section, Array.Empty<int>(), leaveDateThreshold);
 
-        public async Task<IResponse> ImportStudentsAsync(int[] status, DateTime? leaveDateThreshold)
+        public async Task<IResponse> ImportStudentsAsync(short year, short section, int[] status, DateTime? leaveDateThreshold)
         {
             logger.LogDebug("Hole Lernende aus SchILD...");
-            var students = await schildExporter.GetStudentsAsync(status, leaveDateThreshold).ConfigureAwait(false);
+            var students = await schildExporter.GetStudentsAsync(year, section).ConfigureAwait(false);
             logger.LogDebug($"{students.Count} Lernende(n) geladen.");
 
             logger.LogDebug("Hole Datenschutzeinstellungen der Lernenden aus SchILD...");
@@ -160,13 +178,12 @@ namespace SchulIT.SchildIccImporter.Core
                         Email = student.Email,
                         Gender = GetGender(student.Gender),
                         Birthday = student.Birthday.HasValue ? student.Birthday.Value : new DateTime(1970,1,1),
-                        Grade = student.Grade?.Name,
                         ApprovedPrivacyCategories = approvedPrivacyCategories
                     };
                 })
                 .ToList();
 
-            return await iccImporter.ImportStudentsAsync(data);
+            return await iccImporter.ImportStudentsAsync(data, section, year);
         }
 
         /// <summary>
@@ -214,7 +231,7 @@ namespace SchulIT.SchildIccImporter.Core
                 })
                 .ToList();
 
-            return await iccImporter.ImportStudyGroupsAsync(data);
+            return await iccImporter.ImportStudyGroupsAsync(data, section, year);
         }
 
         public async Task<IResponse> ImportStudyGroupMembershipsAsync(IEnumerable<Student> currentStudents, short year, short section)
@@ -240,7 +257,7 @@ namespace SchulIT.SchildIccImporter.Core
                 }
             }
 
-            return await iccImporter.ImportStudyGroupMembershipsAsync(membershipData);
+            return await iccImporter.ImportStudyGroupMembershipsAsync(membershipData, section, year);
         }
 
         public async Task<IResponse> ImportSubjectsAsync()
@@ -306,7 +323,7 @@ namespace SchulIT.SchildIccImporter.Core
                 })
                 .ToList();
 
-            return await iccImporter.ImportTeachersAsync(data);
+            return await iccImporter.ImportTeachersAsync(data, section, year);
         }
 
         private IList<string> GetTeacherTags(Teacher teacher, short year, short section)
@@ -348,21 +365,28 @@ namespace SchulIT.SchildIccImporter.Core
                 .Select(tuition =>
                 {
                     var studyGroup = studyGroups.FirstOrDefault(x => x.Id == tuition.StudyGroupRef.Id && x.Name == tuition.StudyGroupRef.Name);
+                    var teachers = new List<string>();
+                    
+                    if(tuition.TeacherRef != null)
+                    {
+                        teachers.Add(tuition.TeacherRef.Acronym);
+                    }
 
+                    teachers.AddRange(tuition.AdditionalTeachersRef.Select(teacher => teacher.Acronym));
+                    
                     return new TuitionData
                     {
                         Id = IdResolver.Resolve(tuition, studyGroup),
                         Name = NameResolver.Resolve(tuition),
                         DisplayName = studyGroup.DisplayName,
                         Subject = tuition.SubjectRef.Id.ToString(),
-                        Teacher = tuition.TeacherRef?.Acronym,
-                        AdditionalTeachers = tuition.AdditionalTeachersRef.Select(teacher => teacher.Acronym).ToList(),
+                        Teachers = teachers,
                         StudyGroup = IdResolver.Resolve(studyGroup)
                     };
                 })
                 .ToList();
 
-            return await iccImporter.ImportTuitionsAsync(data);
+            return await iccImporter.ImportTuitionsAsync(data, section, year);
         }
     }
 }

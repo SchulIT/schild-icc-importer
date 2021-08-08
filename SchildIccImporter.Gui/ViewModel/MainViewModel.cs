@@ -64,6 +64,18 @@ namespace SchildIccImporter.Gui.ViewModel
             }
         }
 
+        private bool importGradeMemberships;
+
+        public bool ImportGradeMemberships
+        {
+            get { return importGradeMemberships; }
+            set
+            {
+                Set(() => ImportGradeMemberships, ref importGradeMemberships, value);
+                ImportCommand?.RaiseCanExecuteChanged();
+            }
+        }
+
         private bool importSubjects;
 
         public bool ImportSubjects
@@ -290,7 +302,7 @@ namespace SchildIccImporter.Gui.ViewModel
                 if (ImportGrades)
                 {
                     logger.LogInformation("Importiere Klassen/Jgst.");
-                    HandleResponse(await schildIccImporter.ImportGradesAsync());
+                    HandleResponse(await schildIccImporter.ImportGradesAsync(Year, Section));
                     logger.LogInformation("Klassen/Jgst. erfolgreich importiert.");
                 }
 
@@ -311,7 +323,7 @@ namespace SchildIccImporter.Gui.ViewModel
                 if(ImportGradeTeachers)
                 {
                     logger.LogInformation("Importiere Klassenleitungen...");
-                    HandleResponse(await schildIccImporter.ImportGradeTeachersAsync());
+                    HandleResponse(await schildIccImporter.ImportGradeTeachersAsync(Year, Section));
                     logger.LogInformation("Klassenleitungen erfolgreich importiert.");
                 }
 
@@ -325,8 +337,16 @@ namespace SchildIccImporter.Gui.ViewModel
                 if(ImportStudents)
                 {
                     logger.LogInformation("Importere Lernende...");
-                    HandleResponse(await schildIccImporter.ImportStudentsAsync(settings.Schild.StudentFilter, DateTime.Today));
+                    HandleResponse(await schildIccImporter.ImportStudentsAsync(Year, Section, settings.Schild.StudentFilter));
                     logger.LogInformation("Lernende erfolgreich importiert.");
+
+                }
+
+                if (ImportGradeMemberships)
+                {
+                    logger.LogInformation("Importiere Klassenmitgliedschaften...");
+                    HandleResponse(await schildIccImporter.ImportGradeMembershipsAsync(Year, Section, settings.Schild.StudentFilter));
+                    logger.LogInformation("Klassenmitgliedschaften erfolgreich importiert.");
                 }
 
                 if (ImportStudyGroups)
@@ -372,6 +392,7 @@ namespace SchildIccImporter.Gui.ViewModel
         {
             return (ImportGrades == true
                 || ImportGradeTeachers == true
+                || ImportGradeMemberships == true
                 || ImportPrivacy == true
                 || ImportStudents == true
                 || ImportStudyGroupMemberships == true
@@ -387,6 +408,7 @@ namespace SchildIccImporter.Gui.ViewModel
         {
             ImportGrades = true;
             ImportGradeTeachers = true;
+            ImportGradeMemberships = true;
             ImportPrivacy = true;
             ImportStudents = true;
             ImportStudyGroupMemberships = true;
@@ -400,6 +422,7 @@ namespace SchildIccImporter.Gui.ViewModel
         {
             ImportGrades = false;
             ImportGradeTeachers = false;
+            ImportGradeMemberships = false;
             ImportPrivacy = false;
             ImportStudents = false;
             ImportStudyGroupMemberships = false;

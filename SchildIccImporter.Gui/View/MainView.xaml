@@ -303,6 +303,11 @@
                             <fluent:ScreenTip Title="Klassenleitungen importieren" Text="Wenn diese Option ausgewählt ist, werden Klassenleitungen ins ICC importiert."></fluent:ScreenTip>
                         </fluent:CheckBox.ToolTip>
                     </fluent:CheckBox>
+                    <fluent:CheckBox Header="Klassenzugehörigkeiten" IsChecked="{Binding ImportGradeMemberships, Mode=TwoWay}">
+                        <fluent:CheckBox.ToolTip>
+                            <fluent:ScreenTip Title="Klassenzugehörigkeiten importieren" Text="Wenn diese Option ausgewählt ist, werden Klassenmitgliedschaften der Lernenden ins ICC importiert."></fluent:ScreenTip>
+                        </fluent:CheckBox.ToolTip>
+                    </fluent:CheckBox>
                     <fluent:CheckBox Header="Fächer" IsChecked="{Binding ImportSubjects, Mode=TwoWay}">
                         <fluent:CheckBox.ToolTip>
                             <fluent:ScreenTip Title="Fächer importieren" Text="Wenn diese Option ausgewählt ist, werden Fächer ins ICC importiert."></fluent:ScreenTip>

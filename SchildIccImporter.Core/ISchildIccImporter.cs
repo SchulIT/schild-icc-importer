@@ -18,17 +18,19 @@ namespace SchulIT.SchildIccImporter.Core
 
         Task<IResponse> ImportTeachersAsync(short year, short section);
 
-        Task<IResponse> ImportGradesAsync();
+        Task<IResponse> ImportGradesAsync(short year, short section);
 
-        Task<IResponse> ImportGradeTeachersAsync();
+        Task<IResponse> ImportGradeTeachersAsync(short year, short section);
 
-        Task<IResponse> ImportStudentsAsync();
+        Task<IResponse> ImportGradeMembershipsAsync(short year, short section, int[] status);
 
-        Task<IResponse> ImportStudentsAsync(int[] status);
+        Task<IResponse> ImportStudentsAsync(short year, short section);
 
-        Task<IResponse> ImportStudentsAsync(DateTime leaveDateThreshold);
+        Task<IResponse> ImportStudentsAsync(short year, short section, int[] status);
 
-        Task<IResponse> ImportStudentsAsync(int[] status, DateTime? leaveDateThreshold);
+        Task<IResponse> ImportStudentsAsync(short year, short section, DateTime leaveDateThreshold);
+
+        Task<IResponse> ImportStudentsAsync(short year, short section, int[] status, DateTime? leaveDateThreshold);
 
         Task<IResponse> ImportStudyGroupsAsync(IEnumerable<Student> currentStudents, short year, short section);
 
