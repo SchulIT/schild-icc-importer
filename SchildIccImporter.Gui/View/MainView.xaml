@@ -68,6 +68,7 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
                                     <Grid.ColumnDefinitions>
@@ -78,15 +79,21 @@
                                     <TextBlock Style="{StaticResource HeadingTextBlockStyle}"
                                             Grid.ColumnSpan="2">SchILD-Einstellungen</TextBlock>
 
-                                    <TextBlock Grid.Row="1" Grid.Column="0">Verbindungszeichenfolge</TextBlock>
-                                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ConnectionString, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                    <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Verbindungsart</TextBlock>
+                                    <ComboBox Grid.Row="1" Grid.Column="1"
+                                              SelectedItem="{Binding ConnectionType}"
+                                              ItemsSource="{Binding ConnectionTypes}" />
 
-                                    <CheckBox Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5"
+
+                                    <TextBlock Grid.Row="2" Grid.Column="0">Verbindungszeichenfolge</TextBlock>
+                                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding ConnectionString, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+                                    <CheckBox Grid.Row="3" Grid.ColumnSpan="2" Margin="0,5"
                                               IsChecked="{Binding OnlyVisible, Mode=TwoWay}"
                                               Content="Nur sichtbare Elemente exportieren (Fächer, Klassen)"></CheckBox>
 
-                                    <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Top" TextWrapping="Wrap">Lernende mit Status berücksichtigen</TextBlock>
-                                    <ListBox Grid.Row="3" Grid.Column="1"
+                                    <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Top" TextWrapping="Wrap">Lernende mit Status berücksichtigen</TextBlock>
+                                    <ListBox Grid.Row="4" Grid.Column="1"
                                              SelectionMode="Multiple"
                                              ItemsSource="{Binding SchuelerStatusList}">
                                         <b:Interaction.Behaviors>
@@ -95,16 +102,16 @@
                                     </ListBox>
 
                                     <TextBlock Style="{StaticResource HeadingTextBlockStyle}"
-                                               Grid.Row="4" Grid.ColumnSpan="2">ICC Einstellungen</TextBlock>
+                                               Grid.Row="5" Grid.ColumnSpan="2">ICC Einstellungen</TextBlock>
 
-                                    <TextBlock Grid.Row="5" Grid.Column="0">URL</TextBlock>
-                                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding IccEndpoint, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                    <TextBlock Grid.Row="6" Grid.Column="0">URL</TextBlock>
+                                    <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding IccEndpoint, UpdateSourceTrigger=PropertyChanged}"></TextBox>
 
-                                    <TextBlock Grid.Row="6" Grid.Column="0">Token</TextBlock>
-                                    <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding IccToken, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                    <TextBlock Grid.Row="7" Grid.Column="0">Token</TextBlock>
+                                    <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding IccToken, UpdateSourceTrigger=PropertyChanged}"></TextBox>
 
-                                    <TextBlock Grid.Row="7" Grid.Column="0" VerticalAlignment="Top" TextWrapping="Wrap">Klassen ohne Stellvertreter</TextBlock>
-                                    <ListBox Grid.Row="7" Grid.Column="1"
+                                    <TextBlock Grid.Row="8" Grid.Column="0" VerticalAlignment="Top" TextWrapping="Wrap">Klassen ohne Stellvertreter</TextBlock>
+                                    <ListBox Grid.Row="8" Grid.Column="1"
                                              SelectionMode="Multiple"
                                              ItemsSource="{Binding Grades}">
                                         <b:Interaction.Behaviors>
@@ -113,7 +120,7 @@
                                     </ListBox>
                                     
                                     <fluent:Button Header="Einstellungen speichern" IsDefinitive="False"
-                                                   Grid.Row="8" Grid.ColumnSpan="2"
+                                                   Grid.Row="9" Grid.ColumnSpan="2"
                                                    Command="{Binding SaveCommand}" HorizontalAlignment="Left">
                                         <fluent:Button.LargeIcon>
                                             <!-- This file was generated by the AiToXaml tool.-->

@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using SchildIccImporter.Settings;
 using SchulIT.SchildExport;
 using SchulIT.SchildExport.Entities;
 using SchulIT.SchildExport.Linq;
@@ -15,6 +16,14 @@ namespace SchildIccImporter.Gui.ViewModel
     public class SettingsViewModel : ViewModelBase
     {
         #region Properties
+
+        private ConnectionType connectionType;
+
+        public ConnectionType ConnectionType
+        {
+            get => connectionType;
+            set => Set(() => ConnectionType, ref connectionType, value);
+        }
 
         private string connectionString;
 
@@ -47,6 +56,8 @@ namespace SchildIccImporter.Gui.ViewModel
             get { return iccToken; }
             set { Set(() => IccToken, ref iccToken, value); }
         }
+
+        public List<ConnectionType> ConnectionTypes { get; private set; } = new List<ConnectionType>();
 
         public List<SchuelerStatus> SchuelerStatusList { get; private set; } = new List<SchuelerStatus>();
 
@@ -89,6 +100,7 @@ namespace SchildIccImporter.Gui.ViewModel
             this.settingsManager = settingsManager;
             this.schildExporter = exporter;
 
+            LoadConnectionTypes();
             LoadSchuelerStatus();
             SaveCommand = new RelayCommand(SaveSettings, CanSaveSettings);
 
@@ -100,6 +112,7 @@ namespace SchildIccImporter.Gui.ViewModel
             var settings = await settingsManager.LoadSettingsAsync();
 
             OnlyVisible = settings.Schild.OnlyVisibleEntities;
+            ConnectionType = settings.Schild.ConnectionType;
             ConnectionString = settings.Schild.ConnectionString;
 
             foreach(SchuelerStatus status in settings.Schild.StudentFilter)
@@ -151,6 +164,7 @@ namespace SchildIccImporter.Gui.ViewModel
                 iccSettings.Token = IccToken;
 
                 var schildSettings = settings.Schild as JsonSchildSettings;
+                schildSettings.ConnectionType = ConnectionType;
                 schildSettings.ConnectionString = ConnectionString;
                 schildSettings.OnlyVisibleEntities = OnlyVisible;
                 schildSettings.StudentFilter = EnabledSchuelerStatusList.Cast<int>().Distinct().ToArray();
@@ -163,6 +177,16 @@ namespace SchildIccImporter.Gui.ViewModel
             finally
             {
                 CanSaveSettings = true;
+            }
+        }
+
+        private void LoadConnectionTypes()
+        {
+            ConnectionTypes.Clear();
+
+            foreach(ConnectionType type in Enum.GetValues(typeof(ConnectionType)))
+            {
+                ConnectionTypes.Add(type);
             }
         }
 

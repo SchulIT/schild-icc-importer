@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SchildIccImporter.Settings;
+using System;
 
 namespace SchulIT.SchildIccImporter.Settings
 {
@@ -9,6 +10,8 @@ namespace SchulIT.SchildIccImporter.Settings
         int[] StudentFilter { get; }
 
         DateTime? LeaveDate { get; }
+
+        ConnectionType ConnectionType { get; }
 
         string ConnectionString { get; }
     }

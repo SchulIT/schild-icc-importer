@@ -3,12 +3,14 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using Microsoft.Extensions.Logging;
 using SchildIccImporter.Gui.Message;
+using SchildIccImporter.Settings;
 using SchulIT.IccImport;
 using SchulIT.IccImport.Response;
 using SchulIT.SchildExport;
 using SchulIT.SchildIccImporter.Core;
 using SchulIT.SchildIccImporter.Settings;
 using System;
+using System.DirectoryServices.ActiveDirectory;
 
 namespace SchildIccImporter.Gui.ViewModel
 {
@@ -221,7 +223,11 @@ namespace SchildIccImporter.Gui.ViewModel
             try
             {
                 var settings = await settingsManager.LoadSettingsAsync();
-                exporter.Configure(settings.Schild.ConnectionString, false);
+                exporter.Configure(
+                    GetConnectionProviderFromSettings(settings.Schild.ConnectionType),
+                    settings.Schild.ConnectionString,
+                    false
+                );
 
                 var schoolInfo = await exporter.GetSchoolInfoAsync();
 
@@ -430,6 +436,20 @@ namespace SchildIccImporter.Gui.ViewModel
             ImportSubjects = false;
             ImportTeachers = false;
             ImportTuitions = false;
+        }
+
+        private ConnectionProvider GetConnectionProviderFromSettings(ConnectionType type)
+        {
+            switch(type)
+            {
+                case ConnectionType.Access:
+                    return ConnectionProvider.Access;
+                case ConnectionType.MySQL:
+                    return ConnectionProvider.MySqlConnector;
+                case ConnectionType.MSSQL:
+                default:
+                    return ConnectionProvider.SqlServer;
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SchildIccImporter.Settings;
 using System;
 
 namespace SchulIT.SchildIccImporter.Settings
@@ -13,6 +14,9 @@ namespace SchulIT.SchildIccImporter.Settings
 
         [JsonProperty("leave_date")]
         public DateTime? LeaveDate { get; set; } = null;
+
+        [JsonProperty("connection_type")]
+        public ConnectionType ConnectionType { get; set; } = ConnectionType.MSSQL;
 
         [JsonProperty("connection_string")]
         public string ConnectionString { get; set; } = string.Empty;
