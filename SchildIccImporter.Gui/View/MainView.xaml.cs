@@ -32,11 +32,15 @@ namespace SchildIccImporter.Gui.View
 
                 target.Events.CollectionChanged += (s, e) =>
                 {
-                    // Hack to always scroll to bottom
-                    if(target.Events.Count > 0)
+                    Application.Current.Dispatcher.Invoke(() =>
                     {
-                        loggerListView.ScrollIntoView(target.Events[target.Events.Count - 1]);
-                    }
+
+                        // Hack to always scroll to bottom
+                        if (target.Events.Count > 0)
+                        {
+                            loggerListView.ScrollIntoView(target.Events[target.Events.Count - 1]);
+                        }
+                    });
                 };
             }
             else
