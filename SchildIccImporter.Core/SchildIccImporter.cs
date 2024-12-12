@@ -43,13 +43,15 @@ namespace SchulIT.SchildIccImporter.Core
                 grades = grades.WhereIsVisible().ToList();
             }
 
+            grades = grades.Where(x => !string.IsNullOrEmpty(x.Name)).ToList();
+
             var data = grades
                 .Select(schildGrade =>
                 {
                     return new GradeData
                     {
-                        Id = schildGrade.Name,
-                        Name = schildGrade.Name
+                        Id = schildGrade.Name?.Trim(),
+                        Name = schildGrade.Name?.Trim()
                     };
                 }).ToList();
 
@@ -69,25 +71,27 @@ namespace SchulIT.SchildIccImporter.Core
                 grades = grades.WhereIsVisible().ToList();
             }
 
-            foreach(var grade in grades)
+            grades = grades.Where(x => !string.IsNullOrEmpty(x.Name)).ToList();
+
+            foreach (var grade in grades)
             {
-                if(grade.Teacher != null)
+                if (grade.Teacher != null)
                 {
                     data.Add(new GradeTeacherData
                     {
-                        Grade = grade.Name,
-                        Teacher = grade.Teacher.Acronym,
+                        Grade = grade.Name?.Trim(),
+                        Teacher = grade.Teacher.Acronym?.Trim(),
                         Type = "primary"
                     });
                 }
 
-                if(grade.SubstituteTeacher != null)
+                if (grade.SubstituteTeacher != null)
                 {
                     data.Add(new GradeTeacherData
                     {
-                        Grade = grade.Name,
-                        Teacher = grade.SubstituteTeacher.Acronym,
-                        Type = GradesWithoutSubstituteTeachers.Contains(grade.Name) ? "primary": "substitute"
+                        Grade = grade.Name?.Trim(),
+                        Teacher = grade.SubstituteTeacher.Acronym?.Trim(),
+                        Type = GradesWithoutSubstituteTeachers.Contains(grade.Name) ? "primary" : "substitute"
                     });
                 }
             }
@@ -106,9 +110,11 @@ namespace SchulIT.SchildIccImporter.Core
                 return new GradeMembershipData
                 {
                     Student = student.Id.ToString(),
-                    Grade = student.Grade.Name
+                    Grade = student.Grade.Name?.Trim()
                 };
-            }).ToList();
+            })
+                .Where(x => !string.IsNullOrEmpty(x.Grade))
+                .ToList();
 
             return await iccImporter.ImportGradeMembershipsAsync(memberships, section, year);
         }
@@ -131,8 +137,8 @@ namespace SchulIT.SchildIccImporter.Core
                     return new PrivacyCategoryData
                     {
                         Id = category.Id.ToString(),
-                        Label = category.Label,
-                        Description = category.Description
+                        Label = category.Label?.Trim(),
+                        Description = category.Description?.Trim()
                     };
                 })
                 .ToList();
@@ -172,15 +178,16 @@ namespace SchulIT.SchildIccImporter.Core
                     return new StudentData
                     {
                         Id = student.Id.ToString(),
-                        Firstname = student.Firstname,
-                        Lastname = student.Lastname,
-                        Status = student.Status,
-                        Email = student.Email,
+                        Firstname = student.Firstname?.Trim(),
+                        Lastname = student.Lastname?.Trim(),
+                        Status = student.Status?.Trim(),
+                        Email = student.Email?.Trim(),
                         Gender = GetGender(student.Gender),
-                        Birthday = student.Birthday.HasValue ? student.Birthday.Value : new DateTime(1970,1,1),
+                        Birthday = student.Birthday.HasValue ? student.Birthday.Value : new DateTime(1970, 1, 1),
                         ApprovedPrivacyCategories = approvedPrivacyCategories
                     };
                 })
+                .Where(x => !string.IsNullOrEmpty(x.Firstname) && !string.IsNullOrEmpty(x.Lastname) && !string.IsNullOrEmpty(x.Email))
                 .ToList();
 
             return await iccImporter.ImportStudentsAsync(data, section, year);
@@ -278,10 +285,12 @@ namespace SchulIT.SchildIccImporter.Core
                     return new SubjectData
                     {
                         Id = subject.Id.ToString(),
-                        Abbreviation = subject.Abbreviation,
-                        Name = subject.Description
+                        Abbreviation = subject.Abbreviation?.Trim(),
+                        Name = subject.Description?.Trim()
                     };
-                }).ToList();
+                })
+                .Where(x => !string.IsNullOrEmpty(x.Abbreviation) && !string.IsNullOrEmpty(x.Name))
+                .ToList();
 
             return await iccImporter.ImportSubjectsAsync(data);
         }
@@ -310,17 +319,18 @@ namespace SchulIT.SchildIccImporter.Core
 
                     return new TeacherData
                     {
-                        Id = teacher.Acronym,
-                        Acronym = teacher.Acronym,
-                        Firstname = teacher.Firstname,
-                        Lastname = teacher.Lastname,
-                        Email = teacher.Email,
-                        Title = teacher.Title,
+                        Id = teacher.Acronym?.Trim(),
+                        Acronym = teacher.Acronym?.Trim(),
+                        Firstname = teacher.Firstname?.Trim(),
+                        Lastname = teacher.Lastname?.Trim(),
+                        Email = teacher.Email?.Trim(),
+                        Title = teacher.Title?.Trim(),
                         Gender = GetGender(teacher.Gender),
                         Tags = GetTeacherTags(teacher, year, section),
                         Subjects = subjects
                     };
                 })
+                .Where(x => !string.IsNullOrEmpty(x.Acronym) && !string.IsNullOrEmpty(x.Firstname) && !string.IsNullOrEmpty(x.Lastname) && !string.IsNullOrEmpty(x.Email))
                 .ToList();
 
             return await iccImporter.ImportTeachersAsync(data, section, year);
@@ -365,15 +375,21 @@ namespace SchulIT.SchildIccImporter.Core
                 .Select(tuition =>
                 {
                     var studyGroup = studyGroups.FirstOrDefault(x => x.Id == tuition.StudyGroupRef.Id && x.Name == tuition.StudyGroupRef.Name);
+
+                    if (studyGroup == null)
+                    {
+                        return null;
+                    }
+
                     var teachers = new List<string>();
-                    
-                    if(tuition.TeacherRef != null)
+
+                    if (tuition.TeacherRef != null)
                     {
                         teachers.Add(tuition.TeacherRef.Acronym);
                     }
 
                     teachers.AddRange(tuition.AdditionalTeachersRef.Select(teacher => teacher.Acronym));
-                    
+
                     return new TuitionData
                     {
                         Id = IdResolver.Resolve(tuition, studyGroup),
@@ -384,6 +400,7 @@ namespace SchulIT.SchildIccImporter.Core
                         StudyGroup = IdResolver.Resolve(studyGroup)
                     };
                 })
+                .Where(x => x != null)
                 .ToList();
 
             return await iccImporter.ImportTuitionsAsync(data, section, year);
