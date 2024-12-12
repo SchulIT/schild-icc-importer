@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
+using LinqToDB.Common;
 using Microsoft.Extensions.Logging;
 using SchildIccImporter.Gui.Message;
 using SchildIccImporter.Settings;
@@ -228,6 +229,7 @@ namespace SchildIccImporter.Gui.ViewModel
                     settings.Schild.ConnectionString,
                     false
                 );
+                
 
                 var schoolInfo = await exporter.GetSchoolInfoAsync();
 
@@ -302,6 +304,8 @@ namespace SchildIccImporter.Gui.ViewModel
                 schildIccImporter.GradesWithoutSubstituteTeachers.AddRange(settings.GradesWithoutSubstituteTeachers);
                 iccImporter.BaseUrl = settings.Icc.Url;
                 iccImporter.Token = settings.Icc.Token;
+
+                Configuration.Linq.GuardGrouping = false;
 
                 var students = await exporter.GetStudentsAsync(settings.Schild.StudentFilter, DateTime.Today);
 
