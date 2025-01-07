@@ -286,10 +286,10 @@ namespace SchulIT.SchildIccImporter.Core
                     {
                         Id = subject.Id.ToString(),
                         Abbreviation = subject.Abbreviation?.Trim(),
-                        Name = subject.Description?.Trim()
+                        Name = !string.IsNullOrEmpty(subject.Description?.Trim()) ? subject.Description?.Trim() : subject.Abbreviation?.Trim()
                     };
                 })
-                .Where(x => !string.IsNullOrEmpty(x.Abbreviation) && !string.IsNullOrEmpty(x.Name))
+                .Where(x => !string.IsNullOrEmpty(x.Abbreviation))
                 .ToList();
 
             return await iccImporter.ImportSubjectsAsync(data);

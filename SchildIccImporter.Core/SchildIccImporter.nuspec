@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>SchulIT.SchildIccImporter.Core</id>
-    <version>2.2.0</version>
+    <version>2.2.1</version>
     <title>SchulIT.SchildIccImporter.Core</title>
     <authors>Marcel Marnitz</authors>
     <license type="file">LICENSE.md</license>
