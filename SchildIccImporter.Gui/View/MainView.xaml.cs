@@ -94,6 +94,14 @@ namespace SchildIccImporter.Gui.View
                 page.Text = "Die Antwort impliziert, dass der Server Daten verworfen hat. Bitte prüfen.";
                 page.Instruction = "Information";
                 page.Icon = TaskDialogStandardIcon.Information;
+
+                var copyButton = new TaskDialogCustomButton { Text = "Details kopieren (Zwischenablage)", DefaultButton = false };
+                copyButton.Click += delegate
+                {
+                    Clipboard.SetText(msg.ResponseBody, TextDataFormat.Text);
+                };
+
+                page.CustomButtons.Add(copyButton);
             }
             else if (msg.Type == ResponseMessageType.Error)
             {
@@ -101,6 +109,14 @@ namespace SchildIccImporter.Gui.View
                 page.Text = "Die Antwort impliziert, dass der Server die Daten nicht importiert hat. Bitte prüfen.";
                 page.Instruction = "Fehler";
                 page.Icon = TaskDialogStandardIcon.Error;
+
+                var copyButton = new TaskDialogCustomButton { Text = "Details kopieren (Zwischenablage)", DefaultButton = false };
+                copyButton.Click += delegate
+                {
+                    Clipboard.SetText(msg.ResponseBody, TextDataFormat.Text);
+                };
+
+                page.CustomButtons.Add(copyButton);
             }
 
             page.Expander.Text = msg.ResponseBody;
